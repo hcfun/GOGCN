@@ -10,3 +10,7 @@ The resources of Graph convolutional network on Gene Ontology for measuring gene
 ## Datasets
 - [Gene Ontology](http://geneontology.org/docs/download-ontology/) dated September 2020.
 - [Gene Ontology annotations](http://geneontology.org/docs/download-go-annotations/) for Homo sapiens(dated October 2020) and Saccharomy cescerevisiae(dated October 2020).
+
+## Train model and compute gene functional similarity
+- run `run.py` to train the model. 
+- run `geneSim.py` to compute gene functional similarity.
