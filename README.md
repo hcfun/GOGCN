@@ -4,5 +4,5 @@ The resources of Graph convolutional network on Gene Ontology for measuring gene
 
 
 ## Dependencies
-- Install PyTorch using Anaconda.
-- Install the requirements: requirements.txt
+- Install [PyTorch](https://pytorch.org/) using [Anaconda](https://www.anaconda.com/products/individual).
+- Install all the requirements from 'requirements.txt'
