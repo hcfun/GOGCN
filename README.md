@@ -13,5 +13,5 @@ The resources of Graph convolutional network on Gene Ontology for measuring gene
 - [Gene Ontology annotations](http://geneontology.org/docs/download-go-annotations/) for Homo sapiens(dated October 2020) and Saccharomy cescerevisiae(dated October 2020).
 
 ## Train model and compute gene functional similarity
-- run `run.py` to train the model. 
+- run `run.py` to train the model and learn the representation for terms and relations.
 - run `geneSim.py` to compute gene functional similarity.
