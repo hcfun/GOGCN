@@ -577,6 +577,7 @@ class geneSim:
             return sim_mfiea, sim_mfniea
 
     def calSimGenes_Allmethods(self):
+        pprint(vars(self.p))
         gene1List = []  # 第一列基因
         gene2List = []  # 第二列基因
         for line in self.genePair_file:
@@ -607,11 +608,11 @@ class geneSim:
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Parser For Arguments',
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('-genePair', dest='genePair', default='./data/genePair/genePair_sgd_pathway', help='genePair')
-    parser.add_argument('-ontology', dest='onto', default='mf', help='bp,cc,mf')
-    parser.add_argument('-sim_dictory', dest='sim_dictory', default='pathway_sgd', help='dictory of storing the experimental results')
+    parser.add_argument('-genePair', dest='genePair', default='./data/genePair/genePair_ppi_human_pos', help='genePair')
+    parser.add_argument('-ontology', dest='onto', default='bp', help='bp,cc,mf')
+    parser.add_argument('-sim_dictory', dest='sim_dictory', default='ppi_human', help='dictory of storing the experimental results: ppi_human, ppi_sgd, pathway_sgd, geneExpression')
     parser.add_argument('-embed_dir', dest='embed_dir', default='./embedding/ent_embedding_Pretraining_75b2d53a.csv', help='embeddings of terms')
-    parser.add_argument('-goa_dir', dest='goa_dir', default='./data/goa_sgd', help='goa_file:goa_sgd for sgd, goa_human for human')
+    parser.add_argument('-goa_dir', dest='goa_dir', default='./data/goa_human', help='goa_file: goa_sgd for sgd, goa_human for human')
     args = parser.parse_args()
 
     genesim = geneSim(args)
