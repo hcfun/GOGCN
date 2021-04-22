@@ -15,3 +15,7 @@ The resources of Graph convolutional network on Gene Ontology for measuring gene
 ## Train model and compute gene functional similarity
 - run `run.py` to train the model and learn the representation for terms and relations.
 - run `geneSim.py` to compute gene functional similarity.
+
+## Note
+- There are some absolute paths in `Comparison_algorithm/SORA/SORA.py` and `Comparison_algorithm/Wang/SV.py`. Please change these absolue paths when reproducing the results of GOGCN.
+- run `preprocess.sh` first.
