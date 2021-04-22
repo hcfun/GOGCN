@@ -303,7 +303,7 @@ if __name__ == '__main__':
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     parser.add_argument('-name', default='Pretraining_' + str(uuid.uuid4())[:8], help='Set run name for saving/restoring models')
-    parser.add_argument('-opn', dest='opn', default='corr', help='Composition Operation to be used in CompGCN')
+    parser.add_argument('-opn', dest='opn', default='corr', help='Composition Operation to be used in model')
     parser.add_argument('-batch', dest='batch_size', default=128, type=int, help='Batch size')
     parser.add_argument('-gamma', type=float, default=40.0, help='Margin')
     parser.add_argument('-gpu', type=str, default='0', help='Set GPU Ids : Eg: For CPU = -1, For Single GPU = 0')
