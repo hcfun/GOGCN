@@ -48,15 +48,4 @@ class Dataset(Dataset):
         trp_label = torch.stack([_[1] for _ in data], dim=0)#shape:(batch, num_ent) value=1 when triple is true else 0.Thait is, it's convenient to sample neg entities
         return triple, trp_label
 
-    #negative sampling. Don't need.
-    def get_neg_ent(self, triple, label):
-        def get(triple, label):
-            pos_obj = label
-            mask = np.ones([self.p.num_ent], dtype=bool)
-            mask[label] =0
-            neg_ent = np.int32(np.random.choice(self.entities[mask], self.p.neg_num - len(label), replace=False)).reshape[-1]
-            neg_ent = np.concatenate((pos_obj.reshape[-1]), neg_ent)
-
-            return neg_ent
-        neg_ent = get(triple, label)
-        return neg_ent
+    
