@@ -16,13 +16,8 @@ class BaseModel(torch.nn.Module):
 
 class GCNBase(BaseModel):
     def __init__(self, edge_index, edge_type, num_rel, params=None):
-        """
-
-        :param edge_index: adjacency matrix which contains reverse relation. shape:(2, num_edge*2) row1:sub_ent; row2: obj_ent
-        :param edge_type: shape:(num_edge*2)
-        :param num_rel: num of rel(Do not contain reverse relation)
-        :param params: p
-        """
+        
+        
         super(GCNBase, self).__init__(params)
         self.edge_index = edge_index
         self.edge_type = edge_type
@@ -40,16 +35,13 @@ class GCNBase(BaseModel):
         self.register_parameter('bias', Parameter(torch.zeros(self.p.num_ent)))
 
     def forward_base(self, sub, rel, drop1, drop2):
-        """
-        :param sub: sub_ent_index
-        :param rel: rel_ent_index
-        :return: sub_emb:updated sub_ent_embedding. rel_emb:updated rel_embedding. x:updated all ent_embedding
-        """
+        
+        
         r = self.rel_embedding if self.p.score_func != 'transe' else torch.cat([self.rel_embedding, -self.rel_embedding], dim=0)
         x, r = self.conv1(self.ent_embedding, self.edge_index, self.edge_type, rel_embed=r)
         x = drop1(x)
         x, r = self.conv2(x, self.edge_index, self.edge_type, rel_embed=r) if self.p.gcn_layer == 2 else (x, r)
-        x = drop2(x) if self.p.gcn_layer == 2 else x #shape:(num_ent, 200)
+        x = drop2(x) if self.p.gcn_layer == 2 else x 
 
         sub_emb = torch.index_select(x, 0, sub)
         rel_emb = torch.index_select(r, 0, rel)
@@ -77,27 +69,27 @@ class GCN_ConvE(GCNBase):
 
 
     def concat(self, e1_embed, rel_embed):
-        e1_embed = e1_embed.view(-1, 1, self.p.embed_dim) #shape:(128,1,200)
-        rel_embed = rel_embed.view(-1, 1, self.p.embed_dim) #shape:(128,1,200)
-        stack_inp = torch.cat([e1_embed, rel_embed], 1) #shape:(128,2,200)
-        stack_inp = torch.transpose(stack_inp, 2 ,1).reshape((-1, 1, 2*self.p.k_w, self.p.k_h)) #shape:(128,1,20,20)
+        e1_embed = e1_embed.view(-1, 1, self.p.embed_dim)
+        rel_embed = rel_embed.view(-1, 1, self.p.embed_dim)
+        stack_inp = torch.cat([e1_embed, rel_embed], 1)
+        stack_inp = torch.transpose(stack_inp, 2 ,1).reshape((-1, 1, 2*self.p.k_w, self.p.k_h))
         return stack_inp
 
     def forward(self, sub, rel):
         sub_emb, rel_emb, all_ent_emb = self.forward_base(sub, rel, self.hidden_drop, self.feature_drop)
-        stk_inp = self.concat(sub_emb, rel_emb) #shape:(128,1,20,20)
+        stk_inp = self.concat(sub_emb, rel_emb) 
         x = self.bn0(stk_inp)
-        x = self.m_conv1(x) #shape:(128,200,14,14)
+        x = self.m_conv1(x) 
         x = self.bn1(x)
         x = F.relu(x)
         x = self.feature_drop(x)
-        x = x.view(-1, self.flat_sz) #shape:(128, 200*14*14)
-        x = self.fc(x) #shape:(128,200)
+        x = x.view(-1, self.flat_sz)
+        x = self.fc(x) 
         x = self.hidden_drop2(x)
         x = self.bn2(x)
-        x = F.relu(x) #shape:(128,200)
+        x = F.relu(x) 
 
-        x = torch.mm(x, all_ent_emb.transpose(1,0)) #shape:(128,14541)
+        x = torch.mm(x, all_ent_emb.transpose(1,0)) 
         x += self.bias.expand_as(x)
 
         score = torch.sigmoid(x)
