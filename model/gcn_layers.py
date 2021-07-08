@@ -4,14 +4,7 @@ from helper import *
 
 class GCNConv(MessagePassing):
     def __init__(self, in_channels, out_channels, num_rels, act=lambda x:x, params=None):
-        """
-
-        :param in_channels: The initial embed_dim
-        :param out_channels: The updated embed_dim
-        :param num_rels: The number of relation
-        :param act:
-        :param params:
-        """
+       
         super(self.__class__, self).__init__()
 
 
@@ -22,13 +15,13 @@ class GCNConv(MessagePassing):
         self.act = act
         self.device =None
 
-        #let every neighbor point to sub entity (if sub ent is head, using Wo; if sub ent is tail, using Wi)
+       
         self.w_loop = get_param((in_channels, out_channels)) #Ws
         self.w_in = get_param((in_channels, out_channels)) #Wi
         self.w_out = get_param((in_channels, out_channels)) #Wo
 
         self.w_rel = get_param((in_channels, out_channels)) #Wrel
-        self.loop_rel = get_param((1, in_channels)) #may be not use
+        self.loop_rel = get_param((1, in_channels)) 
 
         self.drop = torch.nn.Dropout(self.p.dropout)
         self.bn = torch.nn.BatchNorm1d(out_channels)
@@ -39,19 +32,13 @@ class GCNConv(MessagePassing):
 
 
     def forward(self, x, edge_index, edge_type, rel_embed):
-        """
-
-        :param x: ent_embedding.shape(num_ent, 100)
-        :param edge_index: adjacency matrix. shape(2,num_edge)
-        :param edge_type: shape(num_edge)
-        :param rel_embed: rel_embedding. shape(num_rel*2, 100) take the reverse relations into account
-        :return:
-        """
+        
+        
         if self.device is None:
             self.device = edge_index.device
 
-        rel_embed = torch.cat([rel_embed, self.loop_rel], dim=0) #add self loop into rel_embedding. shape:(num_rel*2+1, 100)
-        num_edges = edge_index.size(1) // 2 #delete reverse edge. real num_edge
+        rel_embed = torch.cat([rel_embed, self.loop_rel], dim=0) #add self loop into rel_embedding.
+        num_edges = edge_index.size(1) // 2 
         num_ent = x.size(0)
 
         self.in_index, self.out_index = edge_index[:, :num_edges], edge_index[:, num_edges:] #shape(2: num_edges). separate the real edges and reverse edges.
@@ -73,21 +60,15 @@ class GCNConv(MessagePassing):
         if self.p.bias: out = out + self.bias
         out = self.bn(out)
 
-        #torch.matmul(rel_embed, self.w_rel)[:-1]: update rel_embeding and [:-1] refer to delete the last row, that is, ignoring the self loop inserted
-        return self.act(out), torch.matmul(rel_embed, self.w_rel)[:-1]  # Ignoring the self loop inserted
+        
+        return self.act(out), torch.matmul(rel_embed, self.w_rel)[:-1]  
 
 
 
     def message(self, x_j, edge_type, rel_embed, edge_norm, mode):
-        """
-
-        :param x_j: obj_ent_embedding. shape:(num_edge, 100)
-        :param edge_type: edge corresponding to the edge_index
-        :param rel_embed: rel_embedding
-        :param edge_norm:
-        :param mode: in out loop rel
-        :return:
-        """
+        
+        
+        
         weight = getattr(self, 'w_{}'.format(mode)) #Get the weight defined above according to the mode.
         rel_embed = torch.index_select(rel_embed, 0, edge_type) #Get the rel_embedding corresponding to current edge according to the edge_type
         xj_rel = self.rel_transform(x_j, rel_embed) #shape:(num_edge, 100)
@@ -95,37 +76,19 @@ class GCNConv(MessagePassing):
         return out if edge_norm is None else out*edge_norm.view(-1, 1) #shape:(num_edge, 200)
 
 
-
-
-
     def update(self, aggr_out):
 
         return aggr_out
 
     def rel_transform(self, ent_embed, rel_embed):
-        """
-        message. corresponding the composition operator: φ(es,er)
-
-        :param ent_embed: sub_ent_embedding
-        :param rel_embed: rel_embeding
-        :return: The tensor after composition operating
-        """
-
-        if self.p.opn == 'corr': trans_embed = ccorr(ent_embed, rel_embed)
-        elif self.p.opn == 'sub': trans_embed = ent_embed - rel_embed
-        elif self.p.opn == 'mult': trans_embed = ent_embed * rel_embed
-        else: raise NotImplementedError
-
+       
+    
+        trans_embed = ccorr(ent_embed, rel_embed)
+        
         return trans_embed
 
     def compute_norm(self, edge_index, num_ent):
-        """
-        D^{-1} * (A+I) or D^{-0.5} * (A+I) *  D^{-0.5}
-
-        :param edge_index: adjacency matrix
-        :param num_ent:
-        :return:
-        """
+        
 
         row, col = edge_index
         edge_weight = torch.ones_like(row).float()
