@@ -303,8 +303,6 @@ if __name__ == '__main__':
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     parser.add_argument('-name', default='Pretraining_' + str(uuid.uuid4())[:8], help='Set run name for saving/restoring models')
-    parser.add_argument('-score_func', dest='score_func', default='conve', help='Score Function for Link prediction')
-    parser.add_argument('-opn', dest='opn', default='corr', help='Composition Operation to be used in model')
     parser.add_argument('-batch', dest='batch_size', default=128, type=int, help='Batch size')
     parser.add_argument('-gamma', type=float, default=40.0, help='Margin')
     parser.add_argument('-gpu', type=str, default='0', help='Set GPU Ids : Eg: For CPU = -1, For Single GPU = 0')
@@ -318,7 +316,6 @@ if __name__ == '__main__':
     parser.add_argument('-restore', dest='restore', action='store_true', help='Restore from the previously saved model')
     parser.add_argument('-bias', dest='bias', action='store_true', help='Whether to use bias in the model')
 
-    parser.add_argument('-num_bases', dest='num_bases', default=-1, type=int, help='Number of basis relation vectors to use')
     parser.add_argument('-init_dim', dest='init_dim', default=100, type=int, help='Initial dimension size for entities and relations')
     parser.add_argument('-gcn_dim', dest='gcn_dim', default=200, type=int, help='Number of hidden units in GCN')
     parser.add_argument('-embed_dim', dest='embed_dim', default=None, type=int, help='Embedding dimension to give as input to score function')
